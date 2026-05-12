@@ -28,6 +28,12 @@
             max-width: 500px;
             width: 100%;
             padding: 40px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .logo {
@@ -35,6 +41,261 @@
             margin-bottom: 30px;
         }
         
+        .logo h1 {
+            color: #e91e63;
+            font-size: 36px;
+        }
+        
+        .logo p {
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #e91e63;
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #e91e63, #c2185b);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(233,30,99,0.4);
+        }
+        
+        button:disabled {
+            background: #ccc;
+            transform: none;
+            cursor: not-allowed;
+        }
+        
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            display: none;
+            text-align: center;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result.success {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            display: block;
+        }
+        
+        .result.error {
+            background: #ffebee;
+            border: 2px solid #f44336;
+            display: block;
+        }
+        
+        .code {
+            font-size: 48px;
+            font-weight: bold;
+            font-family: monospace;
+            letter-spacing: 8px;
+            color: #e91e63;
+            margin: 15px 0;
+        }
+        
+        .instruction {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px;
+            }
+            
+            .code {
+                font-size: 32px;
+                letter-spacing: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>🥀 INSIDIOUS</h1>
+            <p>WhatsApp Bot Pairing Portal</p>
+        </div>
+        
+        <div class="input-group">
+            <label>🌍 Country Code</label>
+            <select id="countryCode">
+                <option value="254">🇰🇪 Kenya (+254)</option>
+                <option value="1">🇺🇸 USA (+1)</option>
+                <option value="44">🇬🇧 UK (+44)</option>
+                <option value="91">🇮🇳 India (+91)</option>
+                <option value="234">🇳🇬 Nigeria (+234)</option>
+                <option value="27">🇿🇦 South Africa (+27)</option>
+                <option value="255">🇹🇿 Tanzania (+255)</option>
+                <option value="256">🇺🇬 Uganda (+256)</option>
+                <option value="233">🇬🇭 Ghana (+233)</option>
+                <option value="263">🇿🇼 Zimbabwe (+263)</option>
+            </select>
+        </div>
+        
+        <div class="input-group">
+            <label>📱 Phone Number</label>
+            <input type="tel" id="phoneNumber" placeholder="712345678" maxlength="15">
+        </div>
+        
+        <div class="input-group">
+            <label>👤 Your Name (Optional)</label>
+            <input type="text" id="userName" placeholder="Enter your name">
+        </div>
+        
+        <button id="pairBtn" onclick="generateCode()">
+            🔗 GENERATE PAIRING CODE
+        </button>
+        
+        <div id="result"></div>
+        
+        <div class="footer">
+            🥀 INSIDIOUS V2.1.1 | Developed by STANYTZ
+        </div>
+    </div>
+    
+    <script>
+        // ===========================================
+        // 🔴 CHANGE THIS TO YOUR BOT'S URL! 🔴
+        // ===========================================
+        const BOT_API = "https://YOUR-BOT-URL-HERE.onrender.com";
+        // ===========================================
+        
+        async function generateCode() {
+            const countryCode = document.getElementById('countryCode').value;
+            let phone = document.getElementById('phoneNumber').value;
+            const userName = document.getElementById('userName').value || "Soul";
+            const pairBtn = document.getElementById('pairBtn');
+            const resultDiv = document.getElementById('result');
+            
+            phone = phone.replace(/[^0-9]/g, '');
+            
+            if (!phone) {
+                showResult('❌ Please enter your phone number!', 'error');
+                return;
+            }
+            
+            if (phone.length < 9) {
+                showResult('❌ Invalid phone number! Must be at least 9 digits.', 'error');
+                return;
+            }
+            
+            const fullNumber = countryCode + phone;
+            
+            pairBtn.disabled = true;
+            pairBtn.innerHTML = '<span class="spinner"></span> GENERATING...';
+            
+            try {
+                const response = await fetch(`${BOT_API}/api/pair?number=${fullNumber}&name=${encodeURIComponent(userName)}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult(`
+                        <div style="text-align: center;">
+                            <div style="font-size: 14px; color: #666; margin-bottom: 10px;">✨ YOUR PAIRING CODE ✨</div>
+                            <div class="code">${data.code}</div>
+                            <div class="instruction">
+                                📌 Open WhatsApp → Settings → Linked Devices → Link with phone number<br>
+                                ⏰ Enter this code within 5 minutes<br>
+                                🔐 Keep this code private!
+                            </div>
+                        </div>
+                    `, 'success');
+                } else {
+                    showResult('❌ ' + (data.error || 'Failed to generate code'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showResult('❌ Cannot connect to bot. Make sure your WhatsApp bot is running!', 'error');
+            } finally {
+                pairBtn.disabled = false;
+                pairBtn.innerHTML = '🔗 GENERATE PAIRING CODE';
+            }
+        }
+        
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<div class="result ${type}">${message}</div>`;
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        // Enter key support
+        document.getElementById('phoneNumber').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateCode();
+            }
+        });
+    </script>
+</body>
+</html>        
         .logo h1 {
             color: #e91e63;
             font-size: 36px;
